@@ -9,6 +9,7 @@ destination template, and then writes refactored templates back to `cdk.out`.
 from __future__ import annotations
 
 import argparse
+import difflib
 import json
 import sys
 from datetime import datetime, UTC
@@ -38,6 +39,14 @@ def _parse_args() -> argparse.Namespace:
         '--resources_file',
         help='Path to JSON file containing an array of logical resource IDs to move',
     )
+    parser.add_argument(
+        '--base_stack_template',
+        help='Path to a JSON file to compare against the generated base refactored template',
+    )
+    parser.add_argument(
+        '--destination_stack_template',
+        help='Path to a JSON file to compare against the generated destination refactored template',
+    )
     return parser.parse_args()
 
 
@@ -57,6 +66,21 @@ def _read_resources_to_move(resources_file: Path) -> list[str]:
     if duplicates:
         duplicate_list = ', '.join(sorted(set(duplicates)))
         raise ValueError(f'Resources file contains duplicate logical IDs: {duplicate_list}')
+
+    return parsed
+
+
+def _read_json_file(json_file: Path) -> dict[str, Any]:
+    try:
+        with json_file.open('r', encoding='utf-8') as file_handle:
+            parsed = json.load(file_handle)
+    except FileNotFoundError as exc:
+        raise ValueError(f'JSON file not found: {json_file}') from exc
+    except json.JSONDecodeError as exc:
+        raise ValueError(f'JSON file is not valid: {json_file}') from exc
+
+    if not isinstance(parsed, dict):
+        raise ValueError(f'JSON file must contain a JSON object: {json_file}')
 
     return parsed
 
@@ -154,6 +178,36 @@ def _confirm_continue(
 
     if response.strip().lower() not in {'y', 'yes'}:
         raise RuntimeError('Operation cancelled before S3 upload')
+
+
+def _write_text_file(path: Path, content: str) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open('w', encoding='utf-8') as file_handle:
+        file_handle.write(content)
+
+
+def _write_template_differences(
+    diff_file: Path,
+    comparison_name: str,
+    expected_template: dict[str, Any],
+    generated_template: dict[str, Any],
+) -> None:
+    expected_lines = json.dumps(expected_template, indent=2).splitlines()
+    generated_lines = json.dumps(generated_template, indent=2).splitlines()
+    differences = list(
+        difflib.unified_diff(
+            expected_lines,
+            generated_lines,
+            fromfile=f'{comparison_name} (provided)',
+            tofile=f'{comparison_name} (generated)',
+            lineterm='',
+        )
+    )
+
+    if differences:
+        _write_text_file(diff_file, '\n'.join(differences) + '\n')
+    else:
+        _write_text_file(diff_file, f'No differences found for {comparison_name}.\n')
 
 
 def _create_stack_refactor(
@@ -255,8 +309,15 @@ def main() -> int:
         destination_stack = args.destination_stack
         migration_stage = args.migration_stage
         resources_file = Path(args.resources_file)
+        base_stack_template_path = Path(args.base_stack_template)
+        destination_stack_template_path = Path(args.destination_stack_template)
         timestamp = datetime.now(UTC).strftime('%Y%m%dT%H%M%SZ')
         stack_refactor_description = f'{migration_stage} {timestamp}'
+
+        if (base_stack_template_path is None) != (destination_stack_template_path is None):
+            raise ValueError(
+                'Both --base_stack_template and --destination_stack_template must be provided together'
+            )
 
         resources_to_move = _read_resources_to_move(resources_file)
 
@@ -281,9 +342,27 @@ def main() -> int:
 
         base_refactor_file = output_dir / f'{base_stack}.refactor.json'
         destination_refactor_file = output_dir / f'{destination_stack}.refactor.json'
+        base_diff_file = output_dir / f'{base_stack}.refactor.diff.txt'
+        destination_diff_file = output_dir / f'{destination_stack}.refactor.diff.txt'
 
         _write_json_file(base_refactor_file, refactored_base_template)
         _write_json_file(destination_refactor_file, refactored_destination_template)
+
+        if base_stack_template_path and destination_stack_template_path:
+            expected_base_template = _read_json_file(base_stack_template_path)
+            expected_destination_template = _read_json_file(destination_stack_template_path)
+            _write_template_differences(
+                base_diff_file,
+                'base stack template',
+                expected_base_template,
+                refactored_base_template,
+            )
+            _write_template_differences(
+                destination_diff_file,
+                'destination stack template',
+                expected_destination_template,
+                refactored_destination_template,
+            )
 
         artifacts_bucket_arn = _get_export_value(cloudformation, ARTIFACTS_BUCKET_EXPORT_NAME)
         artifacts_bucket_name = _bucket_name_from_arn(artifacts_bucket_arn)
@@ -329,6 +408,9 @@ def main() -> int:
         print(f'Wrote {destination_template_file}')
         print(f'Wrote {base_refactor_file}')
         print(f'Wrote {destination_refactor_file}')
+        if base_stack_template_path and destination_stack_template_path:
+            print(f'Wrote {base_diff_file}')
+            print(f'Wrote {destination_diff_file}')
         print(f'Uploaded {base_refactor_file} to {base_uploaded_url}')
         print(f'Uploaded {destination_refactor_file} to {destination_uploaded_url}')
         print(f'StackRefactorId: {stack_refactor_id}')

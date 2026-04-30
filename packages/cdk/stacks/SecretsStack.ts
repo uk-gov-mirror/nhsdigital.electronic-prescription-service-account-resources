@@ -9,6 +9,7 @@ import {Alias} from "aws-cdk-lib/aws-kms"
 import {nagSuppressions} from "../nagSuppressions"
 import {getExportValue} from "../resources/ExportMigrations"
 import {ConfigSecrets} from "../resources/ConfigSecrets"
+import {RegressionTestSecrets} from "../resources/RegressionTestSecrets"
 
 export interface SecretsStackProps extends StackProps {
   readonly stackName: string
@@ -23,9 +24,7 @@ export class SecretsStack extends Stack {
     super(scope, id, props)
 
     Tags.of(this).add("stackName", props.stackName)
-    // this will be imported into here
-    // const regressionTestSecrets =
-    // new RegressionTestSecrets(this, "RegressionTestSecrets", {stackName: props.stackName})
+    new RegressionTestSecrets(this, "RegressionTestSecrets", {stackName: props.stackName})
 
     // new, unmigrated secrets
     const secretsKmsKey = Alias.fromAliasName(

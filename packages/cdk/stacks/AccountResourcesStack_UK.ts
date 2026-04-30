@@ -11,7 +11,6 @@ import {Functions} from "../resources/Functions"
 import {Alarms} from "../resources/Alarms"
 import {Topic} from "aws-cdk-lib/aws-sns"
 import {getExportValue} from "../resources/ExportMigrations"
-import {RegressionTestSecrets} from "../resources/RegressionTestSecrets"
 
 export interface AccountResourcesStackProps_UK extends StackProps {
   readonly stackName: string
@@ -35,9 +34,6 @@ export class AccountResourcesStack_UK extends Stack {
       getExportValue("lambda-resources:SlackAlertsSnsTopicArn", props.environment))
 
     new ECRRepositories(this, "ECRRepositories")
-
-    // this will be migrated to secrets stack
-    new RegressionTestSecrets(this, "RegressionTestSecrets", {stackName: props.stackName})
 
     const alarms = new Alarms(this, "Alarms", {
       stackName: props.stackName,
