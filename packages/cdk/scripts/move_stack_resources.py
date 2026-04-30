@@ -137,6 +137,25 @@ def _upload_file_to_s3(s3_client: Any, local_path: Path, bucket_name: str, objec
     return f'https://s3.{S3_URL_REGION}.amazonaws.com/{bucket_name}/{object_key}'
 
 
+def _confirm_continue(
+    base_uploaded_url: str,
+    destination_uploaded_url: str,
+    stack_refactor_description: str,
+) -> None:
+    print('Prepared refactored templates for upload:')
+    print(f'  Base template upload target: {base_uploaded_url}')
+    print(f'  Destination template upload target: {destination_uploaded_url}')
+    print(f'  Stack refactor description: {stack_refactor_description}')
+
+    try:
+        response = input('Continue with S3 upload and CloudFormation stack refactor? [y/N]: ')
+    except EOFError as exc:
+        raise RuntimeError('Confirmation required before upload, but no interactive input was available') from exc
+
+    if response.strip().lower() not in {'y', 'yes'}:
+        raise RuntimeError('Operation cancelled before S3 upload')
+
+
 def _create_stack_refactor(
     cloudformation: Any,
     base_stack: str,
@@ -272,6 +291,17 @@ def main() -> int:
         upload_prefix = f'migration/{migration_stage}/{timestamp}'
         base_uploaded_key = f'{upload_prefix}/{base_refactor_file.name}'
         destination_uploaded_key = f'{upload_prefix}/{destination_refactor_file.name}'
+
+        base_uploaded_url = f'https://s3.{S3_URL_REGION}.amazonaws.com/{artifacts_bucket_name}/{base_uploaded_key}'
+        destination_uploaded_url = (
+            f'https://s3.{S3_URL_REGION}.amazonaws.com/{artifacts_bucket_name}/{destination_uploaded_key}'
+        )
+
+        _confirm_continue(
+            base_uploaded_url,
+            destination_uploaded_url,
+            stack_refactor_description,
+        )
 
         base_uploaded_url = _upload_file_to_s3(
             s3_client,
