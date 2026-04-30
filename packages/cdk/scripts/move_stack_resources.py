@@ -165,11 +165,16 @@ def _confirm_continue(
     base_uploaded_url: str,
     destination_uploaded_url: str,
     stack_refactor_description: str,
+    base_diff_file: Path,
+    destination_diff_file: Path,
 ) -> None:
     print('Prepared refactored templates for upload:')
     print(f'  Base template upload target: {base_uploaded_url}')
     print(f'  Destination template upload target: {destination_uploaded_url}')
     print(f'  Stack refactor description: {stack_refactor_description}')
+    print(f'  Base template differences (if expected template provided): {base_diff_file}')
+    print(f'  Destination template differences (if expected template provided): {destination_diff_file}')
+    print('Review the refactored templates and differences before confirming')
 
     try:
         response = input('Continue with S3 upload and CloudFormation stack refactor? [y/N]: ')
@@ -380,6 +385,8 @@ def main() -> int:
             base_uploaded_url,
             destination_uploaded_url,
             stack_refactor_description,
+            base_diff_file,
+            destination_diff_file,
         )
 
         base_uploaded_url = _upload_file_to_s3(
