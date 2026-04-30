@@ -24,8 +24,6 @@ export class SecretsStack extends Stack {
     super(scope, id, props)
 
     Tags.of(this).add("stackName", props.stackName)
-    new RegressionTestSecrets(this, "RegressionTestSecrets", {stackName: props.stackName})
-
     // new, unmigrated secrets
     const secretsKmsKey = Alias.fromAliasName(
       this,
@@ -37,6 +35,7 @@ export class SecretsStack extends Stack {
       stackName: props.stackName,
       configSecretsKmsKey: secretsKmsKey
     })
+    new RegressionTestSecrets(this, "RegressionTestSecrets", {stackName: props.stackName})
 
     // policy exports
     new CfnOutput(this, "AccessSlackSecretsManagedPolicyArn", {
