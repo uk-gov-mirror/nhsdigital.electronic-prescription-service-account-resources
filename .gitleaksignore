@@ -12,3 +12,4 @@ ab8bf6ddcee13e783d9146ac6197720d6fc005c3:packages/slackAlerter/vitest.config.ts:
 5729afcd785badec3da7d552bfff7b4392e658e3:packages/splunkProcessor/tests/transformLogEvent.stepfunctions.test.js:generic-api-key:18
 5729afcd785badec3da7d552bfff7b4392e658e3:packages/splunkProcessor/tests/transformLogEvent.stepfunctions.test.js:generic-api-key:44
 5729afcd785badec3da7d552bfff7b4392e658e3:packages/splunkProcessor/tests/transformLogEvent.stepfunctions.test.js:generic-api-key:51
+2721c87cb42bb126dc0c21f2efc2fc5c3384249f:packages/cdk/migration/regression_test_secrets.json:generic-api-key:106
