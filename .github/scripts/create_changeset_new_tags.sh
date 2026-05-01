@@ -27,10 +27,9 @@ if [ "${status}" != '"CREATE_COMPLETE"' ] && [ "${status}" != '"UPDATE_ROLLBACK_
 fi
 
 # upload file to s3
-# change this to account-resources-cdk-uk:Bucket:ArtifactsBucket:Arn once other change is merged
 artifact_bucket_arn=$(echo "$CF_LONDON_EXPORTS" | \
     jq \
-    --arg EXPORT_NAME "account-resources:ArtifactsBucket" \
+    --arg EXPORT_NAME "account-resources-cdk-uk:Bucket:ArtifactsBucket:Arn" \
     -r '.Exports[] | select(.Name == $EXPORT_NAME) | .Value')
 artifact_bucket=$(echo "$artifact_bucket_arn" | cut -d: -f6 | cut -d/ -f1)
 if [ -z "${artifact_bucket}" ]; then

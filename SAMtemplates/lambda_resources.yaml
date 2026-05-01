@@ -85,7 +85,7 @@ Resources:
     Properties:
       LogGroupName: !Ref LambdaInsightsLogGroupName
       RetentionInDays: !Ref LogRetentionDays
-      KmsKeyId: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
+      KmsKeyId: !ImportValue account-resources-cdk-uk:KMS:CloudwatchLogsKmsKey:Arn
 
   LambdaInsightsLogGroupPolicy:
     Type: AWS::IAM::ManagedPolicy
@@ -104,7 +104,7 @@ Resources:
               - kms:GenerateDataKey*
               - kms:Encrypt
               - kms:ReEncrypt*
-            Resource: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
+            Resource: !ImportValue account-resources-cdk-uk:KMS:CloudwatchLogsKmsKey:Arn
   #endregion
 
   ##################################################
@@ -148,7 +148,7 @@ Resources:
             Action:
               - kms:GenerateDataKey
             Resource:
-              - !ImportValue account-resources:CloudwatchLogsKmsKeyArn
+              - !ImportValue account-resources-cdk-uk:KMS:CloudwatchLogsKmsKey:Arn
   #endregion
 
   ##################################################
@@ -175,12 +175,12 @@ Resources:
                 - ParameterName: RoleArn
                   ParameterValue: !GetAtt SplunkDeliveryStreamProcessorInvokeRole.Arn
         S3Configuration:
-          BucketARN: !ImportValue account-resources:SplunkDeliveryStreamBackupBucket
-          RoleARN: !ImportValue account-resources:SplunkDeliveryStreamBackupBucketRoleArn
+          BucketARN: !ImportValue account-resources-cdk-uk:Bucket:SplunkDeliveryStreamBackupBucket:Arn
+          RoleARN: !ImportValue account-resources-cdk-uk:IAM:SplunkDeliveryStreamBackupBucketRole:Arn
           Prefix: !Ref "AWS::StackName"
           EncryptionConfiguration:
             KMSEncryptionConfig:
-              AWSKMSKeyARN: !ImportValue account-resources:SplunkDeliveryStreamBackupKMSKey
+              AWSKMSKeyARN: !ImportValue account-resources-cdk-uk:KMS:SplunkDeliveryStreamBackupKMSKey:Arn
         CloudWatchLoggingOptions:
           Enabled: true
           LogGroupName: !Ref SplunkDeliveryStreamLogGroup
@@ -195,7 +195,7 @@ Resources:
     Properties:
       LogGroupName: !Sub "/aws/kinesisfirehose/${AWS::StackName}-SplunkDeliveryStream"
       RetentionInDays: !Ref LogRetentionDays
-      KmsKeyId: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
+      KmsKeyId: !ImportValue account-resources-cdk-uk:KMS:CloudwatchLogsKmsKey:Arn
 
   SplunkDeliveryStreamLogStream:
     Type: AWS::Logs::LogStream
@@ -206,7 +206,7 @@ Resources:
     Type: AWS::IAM::ManagedPolicy
     Properties:
       Roles:
-        - !ImportValue account-resources:SplunkDeliveryStreamBackupBucketRole
+        - !ImportValue account-resources-cdk-uk:IAM:SplunkDeliveryStreamBackupBucketRole:Name
       PolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -224,7 +224,7 @@ Resources:
               - kms:Encrypt
               - kms:ReEncrypt*
             Resource:
-              - !ImportValue account-resources:CloudwatchLogsKmsKeyArn
+              - !ImportValue account-resources-cdk-uk:KMS:CloudwatchLogsKmsKey:Arn
   #endregion
 
   ##################################################
@@ -298,7 +298,7 @@ Resources:
               - kms:Encrypt
               - kms:ReEncrypt*
             Resource:
-              - !ImportValue account-resources:CloudwatchLogsKmsKeyArn
+              - !ImportValue account-resources-cdk-uk:KMS:CloudwatchLogsKmsKey:Arn
 
   SplunkDeliveryStreamProcessorDeliveryStreamManagedPolicy:
     Type: AWS::IAM::ManagedPolicy
@@ -323,7 +323,7 @@ Resources:
     Properties:
       LogGroupName: !Sub "/aws/lambda/${SplunkDeliveryStreamProcessor}"
       RetentionInDays: !Ref LogRetentionDays
-      KmsKeyId: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
+      KmsKeyId: !ImportValue account-resources-cdk-uk:KMS:CloudwatchLogsKmsKey:Arn
   #endregion
 
   ##################################################
@@ -369,20 +369,20 @@ Resources:
             Action:
               - secretsmanager:GetSecretValue
             Resource:
-              - !ImportValue account-resources:ClinicalTrackerCACertSecret
-              - !ImportValue account-resources:ClinicalTrackerClientCertSecret
-              - !ImportValue account-resources:ClinicalTrackerClientSandboxCertSecret
-              - !ImportValue account-resources:PfpCACertSecret
-              - !ImportValue account-resources:PfpClientCertSecret
-              - !ImportValue account-resources:PfpClientSandboxCertSecret
-              - !ImportValue account-resources:PsuCACertSecret
-              - !ImportValue account-resources:PsuClientCertSecret
-              - !ImportValue account-resources:PsuClientSandboxCertSecret
-              - !ImportValue account-resources:FhirFacadeCACertSecret
-              - !ImportValue account-resources:FhirFacadeClientCertSecret
-              - !ImportValue account-resources:FhirFacadeClientSandboxCertSecret
-              - !ImportValue account-resources:SpinePublicCertificate
-              - !ImportValue secrets:ptlPrescriptionSigningPublicKey
+              - !ImportValue secrets-cdk:Secrets:ClinicalTrackerCACertSecret:Arn
+              - !ImportValue secrets-cdk:Secrets:ClinicalTrackerClientCertSecret:Arn
+              - !ImportValue secrets-cdk:Secrets:ClinicalTrackerClientSandboxCertSecret:Arn
+              - !ImportValue secrets-cdk:Secrets:PfpCACertSecret:Arn
+              - !ImportValue secrets-cdk:Secrets:PfpClientCertSecret:Arn
+              - !ImportValue secrets-cdk:Secrets:PfpClientSandboxCertSecret:Arn
+              - !ImportValue secrets-cdk:Secrets:PsuCACertSecret:Arn
+              - !ImportValue secrets-cdk:Secrets:PsuClientCertSecret:Arn
+              - !ImportValue secrets-cdk:Secrets:PsuClientSandboxCertSecret:Arn
+              - !ImportValue secrets-cdk:Secrets:FhirFacadeCACertSecret:Arn
+              - !ImportValue secrets-cdk:Secrets:FhirFacadeClientCertSecret:Arn
+              - !ImportValue secrets-cdk:Secrets:FhirFacadeClientSandboxCertSecret:Arn
+              - !ImportValue secrets-cdk:Secrets:SpinePublicCertificate:Arn
+              - !ImportValue secrets-cdk:Secrets:ptlPrescriptionSigningPublicKey:Arn
           - Effect: Allow
             Action:
               - secretsmanager:BatchGetSecretValue
@@ -395,7 +395,7 @@ Resources:
     Properties:
       Location: common_lambda_resources.yml
       Parameters:
-        CloudWatchKMSKey: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
+        CloudWatchKMSKey: !ImportValue account-resources-cdk-uk:KMS:CloudwatchLogsKmsKey:Arn
         SplunkSubscriptionFilterRole: !GetAtt SplunkSubscriptionFilterRole.Arn
         SplunkDeliveryStream: !GetAtt SplunkDeliveryStream.Arn
         LambdaName: !Sub "${AWS::StackName}-CertificateChecker"
@@ -463,20 +463,20 @@ Resources:
                 \"${FhirFacadeClientSandboxCertSecret}\", \
                 \"${SpinePublicCertificate}\", \
                 \"${ptlPrescriptionSigningPublicKey}\" ]}"
-              - ClinicalTrackerCACertSecret: !ImportValue account-resources:ClinicalTrackerCACertSecret
-                ClinicalTrackerClientCertSecret: !ImportValue account-resources:ClinicalTrackerClientCertSecret
-                ClinicalTrackerClientSandboxCertSecret: !ImportValue account-resources:ClinicalTrackerClientSandboxCertSecret
-                PfpCACertSecret: !ImportValue account-resources:PfpCACertSecret
-                PfpClientCertSecret: !ImportValue account-resources:PfpClientCertSecret
-                PfpClientSandboxCertSecret: !ImportValue account-resources:PfpClientSandboxCertSecret
-                PsuCACertSecret: !ImportValue account-resources:PsuCACertSecret
-                PsuClientCertSecret: !ImportValue account-resources:PsuClientCertSecret
-                PsuClientSandboxCertSecret: !ImportValue account-resources:PsuClientSandboxCertSecret
-                FhirFacadeCACertSecret: !ImportValue account-resources:FhirFacadeCACertSecret
-                FhirFacadeClientCertSecret: !ImportValue account-resources:FhirFacadeClientCertSecret
-                FhirFacadeClientSandboxCertSecret: !ImportValue account-resources:FhirFacadeClientSandboxCertSecret
-                SpinePublicCertificate: !ImportValue account-resources:SpinePublicCertificate
-                ptlPrescriptionSigningPublicKey: !ImportValue secrets:ptlPrescriptionSigningPublicKey
+              - ClinicalTrackerCACertSecret: !ImportValue secrets-cdk:Secrets:ClinicalTrackerCACertSecret:Arn
+                ClinicalTrackerClientCertSecret: !ImportValue secrets-cdk:Secrets:ClinicalTrackerClientCertSecret:Arn
+                ClinicalTrackerClientSandboxCertSecret: !ImportValue secrets-cdk:Secrets:ClinicalTrackerClientSandboxCertSecret:Arn
+                PfpCACertSecret: !ImportValue secrets-cdk:Secrets:PfpCACertSecret:Arn
+                PfpClientCertSecret: !ImportValue secrets-cdk:Secrets:PfpClientCertSecret:Arn
+                PfpClientSandboxCertSecret: !ImportValue secrets-cdk:Secrets:PfpClientSandboxCertSecret:Arn
+                PsuCACertSecret: !ImportValue secrets-cdk:Secrets:PsuCACertSecret:Arn
+                PsuClientCertSecret: !ImportValue secrets-cdk:Secrets:PsuClientCertSecret:Arn
+                PsuClientSandboxCertSecret: !ImportValue secrets-cdk:Secrets:PsuClientSandboxCertSecret:Arn
+                FhirFacadeCACertSecret: !ImportValue secrets-cdk:Secrets:FhirFacadeCACertSecret:Arn
+                FhirFacadeClientCertSecret: !ImportValue secrets-cdk:Secrets:FhirFacadeClientCertSecret:Arn
+                FhirFacadeClientSandboxCertSecret: !ImportValue secrets-cdk:Secrets:FhirFacadeClientSandboxCertSecret:Arn
+                SpinePublicCertificate: !ImportValue secrets-cdk:Secrets:SpinePublicCertificate:Arn
+                ptlPrescriptionSigningPublicKey: !ImportValue secrets-cdk:Secrets:ptlPrescriptionSigningPublicKey:Arn
     Metadata:
       BuildMethod: esbuild
       guard:
@@ -501,11 +501,11 @@ Resources:
     Type: AWS::SNS::Topic
     Properties:
       TopicName: !Sub ${AWS::StackName}-SlackAlerts
-      KmsMasterKeyId: !ImportValue account-resources:SnsKMSKey
+      KmsMasterKeyId: !ImportValue account-resources-cdk-uk:KMS:SnsAlertKMSKey:Arn
       DeliveryStatusLogging:
         - Protocol: sqs
-          SuccessFeedbackRoleArn: !ImportValue account-resources:SNSFeedbackLoggingRoleArn
-          FailureFeedbackRoleArn: !ImportValue account-resources:SNSFeedbackLoggingRoleArn
+          SuccessFeedbackRoleArn: !ImportValue account-resources-cdk-uk:IAM:SNSAlertLoggingRole:Arn
+          FailureFeedbackRoleArn: !ImportValue account-resources-cdk-uk:IAM:SNSAlertLoggingRole:Arn
 
   # todo add deliver status logging
 
@@ -513,7 +513,7 @@ Resources:
     Type: AWS::SQS::Queue
     Properties:
       QueueName: !Sub ${AWS::StackName}-SlackAlerts
-      KmsMasterKeyId: !ImportValue account-resources:SqsKMSKey
+      KmsMasterKeyId: !ImportValue account-resources-cdk-uk:KMS:SqsAlertKMSKey:Arn
       MessageRetentionPeriod: 86400 # 1day in secs
       RedrivePolicy:
         deadLetterTargetArn: !GetAtt SlackAlerterDeadLetterQueue.Arn
@@ -544,7 +544,7 @@ Resources:
     Type: AWS::SQS::Queue
     Properties:
       QueueName: !Sub ${AWS::StackName}-SlackAlertsDeadLetter
-      KmsMasterKeyId: !ImportValue account-resources:SqsKMSKey
+      KmsMasterKeyId: !ImportValue account-resources-cdk-uk:KMS:SqsAlertKMSKey:Arn
       MessageRetentionPeriod: 604800 # 1week in secs
       VisibilityTimeout: 60
 
@@ -609,7 +609,7 @@ Resources:
     Properties:
       Location: common_lambda_resources.yml
       Parameters:
-        CloudWatchKMSKey: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
+        CloudWatchKMSKey: !ImportValue account-resources-cdk-uk:KMS:CloudwatchLogsKmsKey:Arn
         SplunkSubscriptionFilterRole: !GetAtt SplunkSubscriptionFilterRole.Arn
         SplunkDeliveryStream: !GetAtt SplunkDeliveryStream.Arn
         LambdaName: !Sub "${AWS::StackName}-SlackAlerter"
@@ -618,8 +618,8 @@ Resources:
         IncludeAdditionalPolicies: true
         AdditionalPolicies: !Join
           - ","
-          - - !ImportValue account-resources:SqsDecryptSecretsKMSPolicy
-            - !ImportValue account-resources:AccessSlackSecretsManagedPolicy
+          - - !ImportValue account-resources-cdk-uk:IAM:SqsAlertDecryptSecretsKMSPolicy:Arn
+            - !ImportValue secrets-cdk:IAM:AccessSlackSecretsManagedPolicy:Arn
             - !GetAtt ReadSlackAlerterSqsQueuePolicy.PolicyArn
             - !GetAtt ReadSuppressionSSMParameterPolicy.PolicyArn
 
@@ -705,7 +705,7 @@ Resources:
     Properties:
       Location: common_lambda_resources.yml
       Parameters:
-        CloudWatchKMSKey: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
+        CloudWatchKMSKey: !ImportValue account-resources-cdk-uk:KMS:CloudwatchLogsKmsKey:Arn
         SplunkSubscriptionFilterRole: !GetAtt SplunkSubscriptionFilterRole.Arn
         SplunkDeliveryStream: !GetAtt SplunkDeliveryStream.Arn
         LambdaName: !Sub "${AWS::StackName}-LambdaJanitor"
@@ -781,7 +781,7 @@ Resources:
     Type: AWS::IAM::ManagedPolicy
     Properties:
       Roles:
-        - !ImportValue ci-resources:ProxygenPTLRoleName
+        - !ImportValue iam-cdk:IAM:ProxygenPTLRole:Name
       PolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -799,7 +799,7 @@ Resources:
     Type: AWS::IAM::ManagedPolicy
     Properties:
       Roles:
-        - !ImportValue ci-resources:ProxygenProdRoleName
+        - !ImportValue iam-cdk:IAM:ProxygenProdRole:Name
       PolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -821,58 +821,58 @@ Resources:
             Action:
               - secretsmanager:GetSecretValue
             Resource:
-              - !ImportValue account-resources:PsuClientKeySecret
-              - !ImportValue account-resources:PsuClientSandboxKeySecret
-              - !ImportValue account-resources:PsuClientCertSecret
-              - !ImportValue account-resources:PsuClientSandboxCertSecret
-              - !ImportValue account-resources:PSUProxygenPrivateKey
-              - !ImportValue account-resources:PSUProxygenKid
-              - !ImportValue account-resources:CPSUProxygenPrivateKey
-              - !ImportValue account-resources:CPSUProxygenKid
-              - !ImportValue account-resources:ClinicalTrackerClientKeySecret
-              - !ImportValue account-resources:ClinicalTrackerClientSandboxKeySecret
-              - !ImportValue account-resources:ClinicalTrackerClientCertSecret
-              - !ImportValue account-resources:ClinicalTrackerClientSandboxCertSecret
-              - !ImportValue account-resources:ClinicalTrackerProxygenPrivateKey
-              - !ImportValue account-resources:ClinicalTrackerProxygenKid
-              - !ImportValue account-resources:FhirFacadeClientKeySecret
-              - !ImportValue account-resources:FhirFacadeClientSandboxKeySecret
-              - !ImportValue account-resources:FhirFacadeClientCertSecret
-              - !ImportValue account-resources:FhirFacadeClientSandboxCertSecret
-              - !ImportValue secrets:FhirPrescribingProxygenPrivateKey
-              - !ImportValue secrets:FhirPrescribingProxygenKid
-              - !ImportValue secrets:FhirDispensingProxygenPrivateKey
-              - !ImportValue secrets:FhirDispensingProxygenKid
-              - !ImportValue secrets:PrescriptionsForPatientsProxygenPrivateKey
-              - !ImportValue secrets:PrescriptionsForPatientsProxygenKid
-              - !ImportValue account-resources:PfpClientKeySecret
-              - !ImportValue account-resources:PfpClientCertSecret
-              - !ImportValue account-resources:PfpClientSandboxKeySecret
-              - !ImportValue account-resources:PfpClientSandboxCertSecret
-              - !ImportValue secrets:PrescribingProxygenProdPrivateKey
-              - !ImportValue secrets:PrescribingProxygenProdKid
-              - !ImportValue secrets:PrescribingProxygenPtlPrivateKey
-              - !ImportValue secrets:PrescribingProxygenPtlKid
-              - !ImportValue secrets:DispensingProxygenProdPrivateKey
-              - !ImportValue secrets:DispensingProxygenProdKid
-              - !ImportValue secrets:DispensingProxygenPtlPrivateKey
-              - !ImportValue secrets:DispensingProxygenPtlKid
-              - !ImportValue secrets:PrescriptionsForPatientsProxygenProdPrivateKey
-              - !ImportValue secrets:PrescriptionsForPatientsProxygenProdKid
-              - !ImportValue secrets:PrescriptionsForPatientsProxygenPtlPrivateKey
-              - !ImportValue secrets:PrescriptionsForPatientsProxygenPtlKid
-              - !ImportValue account-resources:PSUProxygenProdPrivateKey
-              - !ImportValue account-resources:PSUProxygenProdKid
-              - !ImportValue account-resources:PSUProxygenPTLPrivateKey
-              - !ImportValue account-resources:PSUProxygenPTLKid
-              - !ImportValue account-resources:CPSUProxygenProdPrivateKey
-              - !ImportValue account-resources:CPSUProxygenProdKid
-              - !ImportValue account-resources:CPSUProxygenPTLPrivateKey
-              - !ImportValue account-resources:CPSUProxygenPTLKid
-              - !ImportValue account-resources:ClinicalTrackerProxygenProdPrivateKey
-              - !ImportValue account-resources:ClinicalTrackerProxygenProdKid
-              - !ImportValue account-resources:ClinicalTrackerProxygenPTLPrivateKey
-              - !ImportValue account-resources:ClinicalTrackerProxygenPTLKid
+              - !ImportValue secrets-cdk:Secrets:PsuClientKeySecret:Arn
+              - !ImportValue secrets-cdk:Secrets:PsuClientSandboxKeySecret:Arn
+              - !ImportValue secrets-cdk:Secrets:PsuClientCertSecret:Arn
+              - !ImportValue secrets-cdk:Secrets:PsuClientSandboxCertSecret:Arn
+              - !ImportValue secrets-cdk:Secrets:PSUProxygenPrivateKey:Arn
+              - !ImportValue secrets-cdk:Secrets:PSUProxygenKid:Arn
+              - !ImportValue secrets-cdk:Secrets:CPSUProxygenPrivateKey:Arn
+              - !ImportValue secrets-cdk:Secrets:CPSUProxygenKid:Arn
+              - !ImportValue secrets-cdk:Secrets:ClinicalTrackerClientKeySecret:Arn
+              - !ImportValue secrets-cdk:Secrets:ClinicalTrackerClientSandboxKeySecret:Arn
+              - !ImportValue secrets-cdk:Secrets:ClinicalTrackerClientCertSecret:Arn
+              - !ImportValue secrets-cdk:Secrets:ClinicalTrackerClientSandboxCertSecret:Arn
+              - !ImportValue secrets-cdk:Secrets:ClinicalTrackerProxygenPrivateKey:Arn
+              - !ImportValue secrets-cdk:Secrets:ClinicalTrackerProxygenKid:Arn
+              - !ImportValue secrets-cdk:Secrets:FhirFacadeClientKeySecret:Arn
+              - !ImportValue secrets-cdk:Secrets:FhirFacadeClientSandboxKeySecret:Arn
+              - !ImportValue secrets-cdk:Secrets:FhirFacadeClientCertSecret:Arn
+              - !ImportValue secrets-cdk:Secrets:FhirFacadeClientSandboxCertSecret:Arn
+              - !ImportValue secrets-cdk:Secrets:FhirPrescribingProxygenPrivateKey:Arn
+              - !ImportValue secrets-cdk:Secrets:FhirPrescribingProxygenKid:Arn
+              - !ImportValue secrets-cdk:Secrets:FhirDispensingProxygenPrivateKey:Arn
+              - !ImportValue secrets-cdk:Secrets:FhirDispensingProxygenKid:Arn
+              - !ImportValue secrets-cdk:Secrets:PrescriptionsForPatientsProxygenPrivateKey:Arn
+              - !ImportValue secrets-cdk:Secrets:PrescriptionsForPatientsProxygenKid:Arn
+              - !ImportValue secrets-cdk:Secrets:PfpClientKeySecret:Arn
+              - !ImportValue secrets-cdk:Secrets:PfpClientCertSecret:Arn
+              - !ImportValue secrets-cdk:Secrets:PfpClientSandboxKeySecret:Arn
+              - !ImportValue secrets-cdk:Secrets:PfpClientSandboxCertSecret:Arn
+              - !ImportValue secrets-cdk:Secrets:PrescribingProxygenProdPrivateKey:Arn
+              - !ImportValue secrets-cdk:Secrets:PrescribingProxygenProdKid:Arn
+              - !ImportValue secrets-cdk:Secrets:PrescribingProxygenPtlPrivateKey:Arn
+              - !ImportValue secrets-cdk:Secrets:PrescribingProxygenPtlKid:Arn
+              - !ImportValue secrets-cdk:Secrets:DispensingProxygenProdPrivateKey:Arn
+              - !ImportValue secrets-cdk:Secrets:DispensingProxygenProdKid:Arn
+              - !ImportValue secrets-cdk:Secrets:DispensingProxygenPtlPrivateKey:Arn
+              - !ImportValue secrets-cdk:Secrets:DispensingProxygenPtlKid:Arn
+              - !ImportValue secrets-cdk:Secrets:PrescriptionsForPatientsProxygenProdPrivateKey:Arn
+              - !ImportValue secrets-cdk:Secrets:PrescriptionsForPatientsProxygenProdKid:Arn
+              - !ImportValue secrets-cdk:Secrets:PrescriptionsForPatientsProxygenPtlPrivateKey:Arn
+              - !ImportValue secrets-cdk:Secrets:PrescriptionsForPatientsProxygenPtlKid:Arn
+              - !ImportValue secrets-cdk:Secrets:PSUProxygenProdPrivateKey:Arn
+              - !ImportValue secrets-cdk:Secrets:PSUProxygenProdKid:Arn
+              - !ImportValue secrets-cdk:Secrets:PSUProxygenPTLPrivateKey:Arn
+              - !ImportValue secrets-cdk:Secrets:PSUProxygenPTLKid:Arn
+              - !ImportValue secrets-cdk:Secrets:CPSUProxygenProdPrivateKey:Arn
+              - !ImportValue secrets-cdk:Secrets:CPSUProxygenProdKid:Arn
+              - !ImportValue secrets-cdk:Secrets:CPSUProxygenPTLPrivateKey:Arn
+              - !ImportValue secrets-cdk:Secrets:CPSUProxygenPTLKid:Arn
+              - !ImportValue secrets-cdk:Secrets:ClinicalTrackerProxygenProdPrivateKey:Arn
+              - !ImportValue secrets-cdk:Secrets:ClinicalTrackerProxygenProdKid:Arn
+              - !ImportValue secrets-cdk:Secrets:ClinicalTrackerProxygenPTLPrivateKey:Arn
+              - !ImportValue secrets-cdk:Secrets:ClinicalTrackerProxygenPTLKid:Arn
  
   ProxygenPTLInstancePutFunctionResources:
     Type: AWS::Serverless::Application
@@ -881,7 +881,7 @@ Resources:
     Properties:
       Location: common_lambda_resources.yml
       Parameters:
-        CloudWatchKMSKey: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
+        CloudWatchKMSKey: !ImportValue account-resources-cdk-uk:KMS:CloudwatchLogsKmsKey:Arn
         SplunkSubscriptionFilterRole: !GetAtt SplunkSubscriptionFilterRole.Arn
         SplunkDeliveryStream: !GetAtt SplunkDeliveryStream.Arn
         LambdaName: !Sub "${AWS::StackName}-ProxygenPTLInstancePut"
@@ -926,7 +926,7 @@ Resources:
     Properties:
       Location: common_lambda_resources.yml
       Parameters:
-        CloudWatchKMSKey: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
+        CloudWatchKMSKey: !ImportValue account-resources-cdk-uk:KMS:CloudwatchLogsKmsKey:Arn
         SplunkSubscriptionFilterRole: !GetAtt SplunkSubscriptionFilterRole.Arn
         SplunkDeliveryStream: !GetAtt SplunkDeliveryStream.Arn
         LambdaName: !Sub "${AWS::StackName}-ProxygenProdInstancePut"
@@ -971,7 +971,7 @@ Resources:
     Properties:
       Location: common_lambda_resources.yml
       Parameters:
-        CloudWatchKMSKey: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
+        CloudWatchKMSKey: !ImportValue account-resources-cdk-uk:KMS:CloudwatchLogsKmsKey:Arn
         SplunkSubscriptionFilterRole: !GetAtt SplunkSubscriptionFilterRole.Arn
         SplunkDeliveryStream: !GetAtt SplunkDeliveryStream.Arn
         LambdaName: !Sub "${AWS::StackName}-ProxygenPTLMTLSSecretPut"
@@ -1016,7 +1016,7 @@ Resources:
     Properties:
       Location: common_lambda_resources.yml
       Parameters:
-        CloudWatchKMSKey: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
+        CloudWatchKMSKey: !ImportValue account-resources-cdk-uk:KMS:CloudwatchLogsKmsKey:Arn
         SplunkSubscriptionFilterRole: !GetAtt SplunkSubscriptionFilterRole.Arn
         SplunkDeliveryStream: !GetAtt SplunkDeliveryStream.Arn
         LambdaName: !Sub "${AWS::StackName}-ProxygenProdMTLSSecretPut"
@@ -1061,7 +1061,7 @@ Resources:
     Properties:
       Location: common_lambda_resources.yml
       Parameters:
-        CloudWatchKMSKey: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
+        CloudWatchKMSKey: !ImportValue account-resources-cdk-uk:KMS:CloudwatchLogsKmsKey:Arn
         SplunkSubscriptionFilterRole: !GetAtt SplunkSubscriptionFilterRole.Arn
         SplunkDeliveryStream: !GetAtt SplunkDeliveryStream.Arn
         LambdaName: !Sub "${AWS::StackName}-ProxygenPTLSpecPublish"
@@ -1106,7 +1106,7 @@ Resources:
     Properties:
       Location: common_lambda_resources.yml
       Parameters:
-        CloudWatchKMSKey: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
+        CloudWatchKMSKey: !ImportValue account-resources-cdk-uk:KMS:CloudwatchLogsKmsKey:Arn
         SplunkSubscriptionFilterRole: !GetAtt SplunkSubscriptionFilterRole.Arn
         SplunkDeliveryStream: !GetAtt SplunkDeliveryStream.Arn
         LambdaName: !Sub "${AWS::StackName}-ProxygenProdSpecPublish"
@@ -1151,7 +1151,7 @@ Resources:
     Properties:
       Location: common_lambda_resources.yml
       Parameters:
-        CloudWatchKMSKey: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
+        CloudWatchKMSKey: !ImportValue account-resources-cdk-uk:KMS:CloudwatchLogsKmsKey:Arn
         SplunkSubscriptionFilterRole: !GetAtt SplunkSubscriptionFilterRole.Arn
         SplunkDeliveryStream: !GetAtt SplunkDeliveryStream.Arn
         LambdaName: !Sub "${AWS::StackName}-ProxygenPTLInstanceGet"
@@ -1196,7 +1196,7 @@ Resources:
     Properties:
       Location: common_lambda_resources.yml
       Parameters:
-        CloudWatchKMSKey: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
+        CloudWatchKMSKey: !ImportValue account-resources-cdk-uk:KMS:CloudwatchLogsKmsKey:Arn
         SplunkSubscriptionFilterRole: !GetAtt SplunkSubscriptionFilterRole.Arn
         SplunkDeliveryStream: !GetAtt SplunkDeliveryStream.Arn
         LambdaName: !Sub "${AWS::StackName}-ProxygenPTLInstanceDelete"
@@ -1273,7 +1273,7 @@ Resources:
     Properties:
       Location: common_lambda_resources.yml
       Parameters:
-        CloudWatchKMSKey: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
+        CloudWatchKMSKey: !ImportValue account-resources-cdk-uk:KMS:CloudwatchLogsKmsKey:Arn
         SplunkSubscriptionFilterRole: !GetAtt SplunkSubscriptionFilterRole.Arn
         SplunkDeliveryStream: !GetAtt SplunkDeliveryStream.Arn
         LambdaName: !Sub "${AWS::StackName}-DriftDetector"
