@@ -16,7 +16,7 @@ fi
 
 ROLE=$(echo "$CF_LONDON_EXPORTS" | \
     jq \
-    --arg EXPORT_NAME "ci-resources:CloudFormationExecutionRole" \
+    --arg EXPORT_NAME "iam-cdk:IAM:CloudFormationExecutionRole:Arn" \
     -r '.Exports[] | select(.Name == $EXPORT_NAME) | .Value')
 
 if [ -z "${ROLE}" ]; then
@@ -34,20 +34,21 @@ if [ "${status}" != '"CREATE_COMPLETE"' ] && [ "${status}" != '"UPDATE_ROLLBACK_
 fi
 
 # upload file to s3
-artifact_bucket_arn=$(echo "$CF_LONDON_EXPORTS" | \
+# change this to account-resources-cdk-uk:Bucket:ArtifactsBucket:Arn once other change is merged
+ARTIFACT_BUCKET_ARN=$(echo "$CF_LONDON_EXPORTS" | \
     jq \
-    --arg EXPORT_NAME "account-resources:ArtifactsBucket" \
+    --arg EXPORT_NAME "account-resources-cdk-uk:Bucket:ArtifactsBucket:Arn" \
     -r '.Exports[] | select(.Name == $EXPORT_NAME) | .Value')
-artifact_bucket=$(echo "$artifact_bucket_arn" | cut -d: -f6 | cut -d/ -f1)
-if [ -z "${artifact_bucket}" ]; then
+ARTIFACT_BUCKET_NAME=$(echo "$ARTIFACT_BUCKET_ARN" | cut -d: -f6 | cut -d/ -f1)
+if [ -z "${ARTIFACT_BUCKET_NAME}" ]; then
     echo "could not retrieve artifact_bucket from aws cloudformation list-exports"
     exit 1
 fi
 
 
 target_location=account-resources/$CHANGE_SET_VERSION/current-tag/$STACK_NAME/template.yml
-target_s3_location=s3://${artifact_bucket}/${target_location}
-target_uri_location=https://${artifact_bucket}.s3.amazonaws.com/${target_location}
+target_s3_location=s3://${ARTIFACT_BUCKET_NAME}/${target_location}
+target_uri_location=https://${ARTIFACT_BUCKET_NAME}.s3.amazonaws.com/${target_location}
 aws s3 cp "${TEMPLATE}" "${target_s3_location}"
 
 CFN_DRIFT_DETECTION_GROUP="account-resources"
@@ -71,7 +72,7 @@ START=$(date +%s)
 
 echo "Checking for existence of $deployment_lock_key ..."
 
-while aws s3 ls "$artifact_bucket/$deployment_lock_key" >/dev/null 2>&1; do
+while aws s3 ls "s3://$ARTIFACT_BUCKET_NAME/$deployment_lock_key" >/dev/null 2>&1; do
   NOW=$(date +%s)
   ELAPSED=$((NOW - START))
   if [ $ELAPSED -ge $TIMEOUT ]; then
