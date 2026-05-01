@@ -150,11 +150,11 @@ Resources:
               - secretsmanager:GetSecretValue
             Resource:
               - !ImportValue secrets-cdk:Secrets:PfpClientKeySecret:Arn
-              - !ImportValue secrets-cdk:Secrets:PfpClientSandboxCertSecret:Arn
+              - !ImportValue secrets-cdk:Secrets:PfpClientCertSecret:Arn
               - !ImportValue secrets-cdk:Secrets:PfpClientSandboxKeySecret:Arn
               - !ImportValue secrets-cdk:Secrets:PfpClientSandboxCertSecret:Arn
               - !ImportValue secrets-cdk:Secrets:PsuClientKeySecret:Arn
-              - !ImportValue secrets-cdk:Secrets:PsuClientSandboxCertSecret:Arn
+              - !ImportValue secrets-cdk:Secrets:PsuClientSandboxKeySecret:Arn
               - !ImportValue secrets-cdk:Secrets:PsuCACertSecret:Arn
               - !ImportValue secrets-cdk:Secrets:PsuCAKeySecret:Arn
               - !ImportValue secrets-cdk:Secrets:PsuClientCertSecret:Arn
