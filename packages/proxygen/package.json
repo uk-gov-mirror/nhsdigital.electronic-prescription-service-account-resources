@@ -10,7 +10,7 @@
         "@aws-sdk/client-secrets-manager": "^3.1032.0",
         "@middy/core": "^7.2.3",
         "@middy/input-output-logger": "^7.3.2",
-        "axios": "^1.15.0",
+        "axios": "^1.15.2",
         "jsonwebtoken": "^9.0.3",
         "uuid": "^14.0.0"
     },
