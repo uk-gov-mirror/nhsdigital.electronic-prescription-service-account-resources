@@ -9,7 +9,7 @@
         "@aws-sdk/client-cloudwatch-logs": "^3.1032.0",
         "@aws-sdk/client-secrets-manager": "^3.1032.0",
         "@middy/core": "^7.2.3",
-        "@middy/input-output-logger": "^7.2.1",
+        "@middy/input-output-logger": "^7.3.2",
         "uuid": "^14.0.0"
     },
     "scripts": {
@@ -20,6 +20,6 @@
     },
     "devDependencies": {
         "aws-sdk-vitest-mock": "^1.0.55",
-        "vitest": "^4.0.17"
+        "vitest": "^4.1.5"
     }
 }

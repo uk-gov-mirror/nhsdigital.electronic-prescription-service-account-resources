@@ -10,7 +10,7 @@ CF_LONDON_EXPORTS=$(aws cloudformation list-exports --region eu-west-2 --output 
 
 ROLE=$(echo "$CF_LONDON_EXPORTS" | \
     jq \
-    --arg EXPORT_NAME "ci-resources:CloudFormationExecutionRole" \
+    --arg EXPORT_NAME "iam-cdk:IAM:CloudFormationExecutionRole:Arn" \
     -r '.Exports[] | select(.Name == $EXPORT_NAME) | .Value')
 if [ -z "${ROLE}" ]; then
     echo "could not retrieve ROLE from aws cloudformation list-exports"
@@ -29,7 +29,7 @@ fi
 # upload file to s3
 artifact_bucket_arn=$(echo "$CF_LONDON_EXPORTS" | \
     jq \
-    --arg EXPORT_NAME "account-resources:ArtifactsBucket" \
+    --arg EXPORT_NAME "account-resources-cdk-uk:Bucket:ArtifactsBucket:Arn" \
     -r '.Exports[] | select(.Name == $EXPORT_NAME) | .Value')
 artifact_bucket=$(echo "$artifact_bucket_arn" | cut -d: -f6 | cut -d/ -f1)
 if [ -z "${artifact_bucket}" ]; then
