@@ -22,8 +22,8 @@
     "packages/cdk"
   ],
   "devDependencies": {
-    "@types/node": "^25.6.0",
     "@eslint/js": "^10.0.1",
+    "@types/node": "^25.6.0",
     "@typescript-eslint/eslint-plugin": "^8.58.2",
     "@typescript-eslint/parser": "^8.57.2",
     "@vitest/coverage-v8": "^4.1.4",
@@ -35,7 +35,6 @@
   },
   "dependencies": {
     "@aws-lambda-powertools/logger": "^2.33.0",
-    "@nhsdigital/eps-cdk-constructs": "^1.7.0",
     "archiver": "^7.0.1",
     "esbuild": "^0.28.0",
     "ts-node": "^10.9.2",
